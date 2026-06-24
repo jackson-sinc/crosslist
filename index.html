@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Industrial Treasures — Cross-List</title>
+<style>
+  /* Fonts bundled locally (see fonts/) so the page works fully offline. */
+  @font-face {
+    font-family: "EB Garamond"; font-style: normal; font-weight: 400;
+    font-display: swap; src: url("fonts/eb-garamond-400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "EB Garamond"; font-style: italic; font-weight: 400;
+    font-display: swap; src: url("fonts/eb-garamond-400-italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display"; font-style: normal; font-weight: 600;
+    font-display: swap; src: url("fonts/playfair-display-600.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display"; font-style: normal; font-weight: 700;
+    font-display: swap; src: url("fonts/playfair-display-700.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Playfair Display"; font-style: normal; font-weight: 800;
+    font-display: swap; src: url("fonts/playfair-display-800.woff2") format("woff2");
+  }
+  :root {
+    --parchment: #f4f4f5;
+    --parchment-2: #e4e4e7;
+    --ink: #27272a;
+    --ink-soft: #71717a;
+    --brass: #6b7280;
+    --brass-dark: #4b5563;
+    --line: #d4d4d8;
+    --card: #ffffff;
+    --green: #3f7a4f;
+    --red: #b04434;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    color: var(--ink);
+    font-family: "EB Garamond", Georgia, serif; font-size: 17px; line-height: 1.5;
+    background-color: var(--parchment);
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(113,113,122,.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(75,85,99,.10), transparent 45%);
+  }
+  .card {
+    width: 380px; background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px; padding: 30px 30px 26px;
+    box-shadow: 0 2px 0 var(--parchment-2), 0 10px 30px rgba(59,47,35,.18);
+    position: relative;
+  }
+  /* decorative double border */
+  .card::after {
+    content: ""; position: absolute; inset: 8px; border: 1px solid var(--line);
+    border-radius: 4px; pointer-events: none;
+  }
+  .brand { text-align: center; margin-bottom: 8px; position: relative; }
+  .logo {
+    display: block; width: 100%; max-width: 300px; height: auto;
+    margin: 2px auto 6px;
+  }
+  .tagline {
+    font-style: italic; color: var(--ink-soft); font-size: 15px; margin: 2px 0 0;
+  }
+  .rule {
+    display: flex; align-items: center; gap: 10px; color: var(--brass);
+    margin: 16px 0 20px; font-size: 13px;
+  }
+  .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .field { display: block; font-size: 14px; color: var(--ink-soft);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+  #sku {
+    width: 100%; padding: 11px 12px; border-radius: 4px; border: 1px solid var(--line);
+    background: #fffdf6; color: var(--ink); font-family: "EB Garamond", serif;
+    font-size: 18px; margin-bottom: 22px; letter-spacing: .05em;
+  }
+  #sku:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(169,119,47,.15); }
+  .channels { display: flex; flex-direction: column; gap: 9px; margin-bottom: 22px; }
+  .ch {
+    display: flex; align-items: center; gap: 11px; padding: 11px 13px;
+    border: 1px solid var(--line); border-radius: 4px; cursor: pointer;
+    background: #fffdf6; font-size: 17px; transition: background .12s, border-color .12s;
+  }
+  .ch:hover { background: #fbf3df; border-color: var(--brass); }
+  .ch input { accent-color: var(--brass); width: 17px; height: 17px; }
+  .ch .ico { font-size: 17px; }
+  button {
+    width: 100%; padding: 13px; border: 1px solid var(--brass-dark); border-radius: 4px;
+    background: linear-gradient(180deg, var(--brass), var(--brass-dark)); color: #fff7e6;
+    font-family: "Playfair Display", serif; font-size: 17px; font-weight: 600;
+    letter-spacing: .08em; cursor: pointer; text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  button:hover { filter: brightness(1.06); }
+  button:disabled { opacity: .6; cursor: default; }
+  #status { margin-top: 16px; font-size: 15px; white-space: pre-wrap; word-break: break-word;
+    color: var(--ink-soft); text-align: center; font-style: italic; }
+  #status.ok { color: var(--green); }
+  #status.err { color: var(--red); }
+  #login-status { margin-top: 14px; font-size: 14px; text-align: center; font-style: italic; min-height: 1em; }
+  #login-status.err { color: var(--red); }
+  .footer { text-align: center; margin-top: 18px; font-size: 12px; color: var(--ink-soft);
+    letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+  .footer .signout { color: var(--brass-dark); text-decoration: none; }
+  .footer .signout:hover { text-decoration: underline; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <!-- ===== LOGIN ===== -->
+  <div class="card" id="login-card">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="Industrial Treasures" />
+      <p class="tagline">Antiques &amp; Curiosities · Est. Forever</p>
+    </div>
+
+    <div class="rule">✦</div>
+
+    <label class="field" for="user">Username</label>
+    <input id="user" autocomplete="username" placeholder="username"
+      onkeydown="if(event.key==='Enter'){document.getElementById('pass').focus()}" />
+
+    <label class="field" for="pass">Password</label>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="password"
+      onkeydown="if(event.key==='Enter')login()" />
+
+    <button id="login-btn" onclick="login()">Enter the Shop</button>
+    <div id="login-status"></div>
+
+    <div class="footer">— Authorized Staff Only —</div>
+  </div>
+
+  <!-- ===== MAIN TOOL ===== -->
+  <div class="card hidden" id="app-card">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="Industrial Treasures" />
+      <p class="tagline">Antiques &amp; Curiosities · Est. Forever</p>
+    </div>
+
+    <div class="rule">✦</div>
+
+    <label class="field" for="sku">Item SKU</label>
+    <input id="sku" placeholder="ANT-001" />
+
+    <label class="field">Send to Marketplaces</label>
+    <div class="channels">
+      <label class="ch"><input type="checkbox" value="bigcommerce" checked /> <span class="ico">🏛️</span> BigCommerce</label>
+      <label class="ch"><input type="checkbox" value="ebay" checked /> <span class="ico">🔨</span> eBay</label>
+      <label class="ch"><input type="checkbox" value="etsy" checked /> <span class="ico">🕰️</span> Etsy</label>
+    </div>
+
+    <button id="send" onclick="send()">List This Treasure</button>
+    <div id="status"></div>
+
+    <div class="footer">— Curated Cross-Listing — <a href="#" onclick="logout();return false;" class="signout">Sign out</a></div>
+  </div>
+
+<script>
+const INGEST_URL = 'https://zu92q3vcp6.execute-api.us-east-2.amazonaws.com/dev/ingest';
+
+// ---- simple front-end gate (demo only — not real security) ----
+const CREDS = { user: 'industrial', pass: '123' };
+
+function showApp() {
+  document.getElementById('login-card').classList.add('hidden');
+  document.getElementById('app-card').classList.remove('hidden');
+  document.getElementById('sku').focus();
+}
+
+function login() {
+  const u = document.getElementById('user').value.trim();
+  const p = document.getElementById('pass').value;
+  const s = document.getElementById('login-status');
+  if (u === CREDS.user && p === CREDS.pass) {
+    sessionStorage.setItem('it_auth', '1');
+    s.textContent = '';
+    showApp();
+  } else {
+    s.className = 'err';
+    s.textContent = '✗ Incorrect username or password.';
+    document.getElementById('pass').value = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('it_auth');
+  document.getElementById('app-card').classList.add('hidden');
+  document.getElementById('login-card').classList.remove('hidden');
+  document.getElementById('user').value = '';
+  document.getElementById('pass').value = '';
+  document.getElementById('login-status').textContent = '';
+  document.getElementById('user').focus();
+}
+
+// stay signed in for the browser session (until tab is closed)
+if (sessionStorage.getItem('it_auth') === '1') showApp();
+
+async function send() {
+  const sku = document.getElementById('sku').value.trim();
+  const channels = [...document.querySelectorAll('.channels input:checked')].map(i => i.value);
+  const status = document.getElementById('status');
+  const btn = document.getElementById('send');
+
+  if (!sku) { status.className = 'err'; status.textContent = 'Please enter a SKU.'; return; }
+  if (!channels.length) { status.className = 'err'; status.textContent = 'Pick at least one marketplace.'; return; }
+
+  const payload = { sku, target_channels: channels };
+  status.className = '';
+  status.style.color = '';
+  status.textContent = 'Sending to the marketplaces…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(INGEST_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await res.text();
+    let body; try { body = JSON.parse(text); } catch { body = null; }
+
+    // Pull a human message out of whatever shape the backend returned.
+    const msg = (body && (body.message || body.error)) || text || res.statusText;
+
+    if (res.ok) {
+      status.className = 'ok';
+      status.textContent = '✓ ' + msg;
+    } else if (res.status === 404) {
+      status.className = 'err';
+      status.textContent = '✗ SKU "' + sku + '" was not found in Square. Check the SKU and try again.';
+    } else if (res.status === 400) {
+      status.className = 'err';
+      status.textContent = '✗ ' + msg;
+    } else {
+      status.className = 'err';
+      status.textContent = '✗ Error ' + res.status + ' — ' + msg;
+    }
+  } catch (err) {
+    // A thrown fetch() means the response was blocked before we could read it.
+    // The backend currently omits the CORS header ONLY on its error paths (the 404
+    // for a bad SKU), while success responses come through fine. So a throw here
+    // almost always means the SKU wasn't found, not a real outage.
+    status.className = 'err';
+    status.textContent = '✗ SKU "' + sku + '" was not found in Square. Check the SKU and try again.';
+    console.error('Request failed (likely a 404 blocked by missing CORS header on the error path):', err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
